@@ -91,7 +91,9 @@ class MenuPrincipal extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => PageDetails()),
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          PageDetails(record: record, heroName: "test")),
                 );
               }),
         ));
@@ -99,20 +101,26 @@ class MenuPrincipal extends StatelessWidget {
 }
 
 class PageDetails extends StatelessWidget {
+  Nouvelle record;
+  String heroName;
+  PageDetails({this.record, this.heroName});
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Second Route"),
-      ),
-      body: Center(
-        child: RaisedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('Go back!'),
+    return new Scaffold(
+        appBar: AppBar(
+          title: Text("Mon Collège Boréal"),
         ),
-      ),
-    );
+        body: new Stack(children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/bg/background-boreal-full.png"),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Text(record.nom, style: TextStyle(color: Colors.white)),
+        ]));
   }
 }
