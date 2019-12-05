@@ -1,87 +1,94 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'modele/nouvelle.dart';
+
+import 'globals.dart' as globals;
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
- @override
- Widget build(BuildContext context) {
-   return MaterialApp(
-     title: 'Baby Names',
-     home: MyHomePage(),
-   );
- }
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Mon Collège Boréal',
+      theme: ThemeData(
+          // This is the theme of your application.
+          //
+          // Try running your application with "flutter run". You'll see the
+          // application has a blue toolbar. Then, without quitting the app, try
+          // changing the primarySwatch below to Colors.green and then invoke
+          // "hot reload" (press "r" in the console where you ran "flutter run",
+          // or simply save your changes to "hot reload" in a Flutter IDE).
+          // Notice that the counter didn't reset back to zero; the application
+          // is not restarted.
+          primarySwatch: globals.cbColor),
+      home: PageMaison(),
+    );
+  }
 }
 
-class MyHomePage extends StatefulWidget {
- @override
- _MyHomePageState createState() {
-   return _MyHomePageState();
- }
+class PageMaison extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+        appBar: AppBar(
+          title: Text("Mon Collège Boréal"),
+        ),
+        body: new Stack(children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/bg/background-boreal-full.png"),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          MenuPrincipal(),
+        ]));
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
- @override
- Widget build(BuildContext context) {
-   return Scaffold(
-     appBar: AppBar(title: Text('Baby Name Votes')),
-     body: _buildBody(context),
-   );
- }
+class MenuPrincipal extends StatelessWidget {
+  const MenuPrincipal({
+    Key key,
+  }) : super(key: key);
 
- Widget _buildBody(BuildContext context) {
-  return StreamBuilder<QuerySnapshot>(
-    stream: Firestore.instance.collection('baby').snapshots(),
-    builder: (context, snapshot) {
-      if (!snapshot.hasData) return LinearProgressIndicator();
+  @override
+  Widget build(BuildContext context) {
+    return _buildNewsList(context);
+  }
 
-      return _buildList(context, snapshot.data.documents);
-    },
-  );
- }
+  Widget _buildNewsList(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance.collection('nouvelles').snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return LinearProgressIndicator();
 
- Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
-   return ListView(
-     padding: const EdgeInsets.only(top: 20.0),
-     children: snapshot.map((data) => _buildListItem(context, data)).toList(),
-   );
- }
+        //return Text('success');
+        return ListView(
+          padding: const EdgeInsets.only(top: 20.0),
+          children: snapshot.data.documents
+              .map((data) => _buildNewsListItem(context, data))
+              .toList(),
+        );
+      },
+    );
+  }
 
- Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
-   final record = Record.fromSnapshot(data);
+  Widget _buildNewsListItem(BuildContext context, DocumentSnapshot data) {
+    final record = Nouvelle.fromSnapshot(data);
 
-   return Padding(
-     key: ValueKey(record.name),
-     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-     child: Container(
-       decoration: BoxDecoration(
-         border: Border.all(color: Colors.grey),
-         borderRadius: BorderRadius.circular(5.0),
-       ),
-       child: ListTile(
-         title: Text(record.name),
-         trailing: Text(record.votes.toString()),
-         onTap: () => record.reference.updateData({'votes': FieldValue.increment(1)})
-       ),
-     ),
-   );
- }
-}
-
-class Record {
- final String name;
- final int votes;
- final DocumentReference reference;
-
- Record.fromMap(Map<String, dynamic> map, {this.reference})
-     : assert(map['name'] != null),
-       assert(map['votes'] != null),
-       name = map['name'],
-       votes = map['votes'];
-
- Record.fromSnapshot(DocumentSnapshot snapshot)
-     : this.fromMap(snapshot.data, reference: snapshot.reference);
-
- @override
- String toString() => "Record<$name:$votes>";
+    return Padding(
+        key: ValueKey(record.nom),
+        padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
+        child: Container(decoration: BoxDecoration(color: Colors.white),
+          child: ListTile(
+            title: Text(record.nom),
+          ),
+        )
+      );
+  }
 }
