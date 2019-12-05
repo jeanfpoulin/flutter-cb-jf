@@ -84,11 +84,35 @@ class MenuPrincipal extends StatelessWidget {
     return Padding(
         key: ValueKey(record.nom),
         padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
-        child: Container(decoration: BoxDecoration(color: Colors.white),
+        child: Container(
+          decoration: BoxDecoration(color: Colors.white),
           child: ListTile(
-            title: Text(record.nom),
-          ),
-        )
-      );
+              title: Text(record.nom),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PageDetails()),
+                );
+              }),
+        ));
+  }
+}
+
+class PageDetails extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Second Route"),
+      ),
+      body: Center(
+        child: RaisedButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text('Go back!'),
+        ),
+      ),
+    );
   }
 }
